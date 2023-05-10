@@ -2,7 +2,7 @@
 #ifndef _NODE_H_
 #define _NODE_H_
 
-typedef float data_type;
+typedef double data_type;
 typedef int coord;
 
 typedef struct Position
@@ -15,8 +15,8 @@ typedef struct Node
 {
     data_type value;
     Position pos;
-    struct Node *nextLine;
-    struct Node *nextColumn;
+    struct Node *next_in_Line;
+    struct Node *next_in_Column;
 } Node;
 
 Node *node_construct(data_type, Node *, Node *, Position);

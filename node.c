@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include "node.h"
 
-Node *node_construct(data_type value, Node *nextLine, Node *nextColumn, Position pos)
+Node *node_construct(data_type value, Node *next_in_Line, Node *next_in_Column, Position pos)
 {
     Node *n = (Node *)malloc(sizeof(Node));
     n->value = value;
-    n->nextLine = nextLine;
-    n->nextColumn = nextColumn;
+    n->next_in_Line = next_in_Line;
+    n->next_in_Column = next_in_Column;
     return n;
 }
 

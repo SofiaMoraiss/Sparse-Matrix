@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 
 #include "matrix.h"
@@ -10,26 +9,23 @@ void print_int(int data)
 
 int main()
 {
-    int n, val;
+    qtt numLines, numColumns;
+    printf("Digite o numero de linhas e colunas: ");
+    scanf("%d %d", &numLines, &numColumns);
 
-    ForwardList *l = forward_list_construct();
+    //for ()
 
-    scanf("%d", &n);
+    Matrix * m = matrix_construct(numLines, numColumns); 
 
-    for (int i = 0; i < n; i++)
-    {
-        scanf("%d", &val);
-        forward_list_push_front(l, val);
-    }
 
     // test the size and print functions
-    printf("Size: %d\n", forward_list_size(l));
-    printf("Lista: ");
-    forward_list_print(l, print_int);
-    printf("\n");
+    printf("numLines: %d\nnumColumns: %d\n", m->numLines, m->numColumns);
+    //printf("Lista: ");
+    //forward_list_print(l, print_int);
+    //printf("\n");
 
     // test the destroy function
-    forward_list_destroy(l);
+    matrix_destroy(m);
 
     return 0;
 }

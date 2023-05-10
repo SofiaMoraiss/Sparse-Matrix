@@ -2,15 +2,14 @@
 #define _MATRIX_H_
 
 #include "node.h"
-typedef float data_type;
-typedef int inte;
+typedef int qtt;
 
-typedef struct Matrix
+typedef struct matrix
 {
-    inte numLines, numColumns;
+    qtt numLines, numColumns;
     Node ** vectorLines;
     Node ** vectorColumns;
-} Matrix;
+}Matrix;
 
 Matrix *matrix_construct(coord numLines, coord numColumns);
 void matrix_destroy(Matrix *m);
