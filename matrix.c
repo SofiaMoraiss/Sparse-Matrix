@@ -82,36 +82,48 @@ Matrix * matrix_add_node(Matrix *m, Position pos, data_type value)
     Node * nextNode = NULL;
 
     if (currentNode == NULL){
+        printf("entrou\n");
         newNode=node_construct(value, NULL, nextNode, pos);
         node_print(newNode);
         currentNode=newNode;
+        newM->vectorColumns[pos.x]=currentNode;
     }
 
-    while (currentNode!=NULL){
-        nextNode = currentNode->next_in_Column;
-        if (pos.y == currentNode->pos.y){
-            currentNode->value=value;
-            return newM;
+    else {
+        while (currentNode!=NULL){
+            nextNode = currentNode->next_in_Column;
+            if (pos.y == currentNode->pos.y){
+                currentNode->value=value;
+                return newM;
+            }
+            if (pos.y > nextNode->pos.y){
+                newNode=node_construct(value, NULL, nextNode, pos);
+                //node_print(newNode);
+                currentNode->next_in_Column=newNode;
+            }
+            currentNode = nextNode;
         }
-        if (pos.y > nextNode->pos.y){
-            newNode=node_construct(value, NULL, nextNode, pos);
-            //node_print(newNode);
-            currentNode->next_in_Column=newNode;
-        }
-        currentNode = nextNode;
     }
+    
 
     currentNode = newM->vectorLines[pos.y];
     nextNode = NULL;
-    while (currentNode!=NULL){
-        nextNode = currentNode->next_in_Line;
-        if (pos.x > nextNode->pos.x){
-            newNode->next_in_Line=nextNode;
-            currentNode->next_in_Line=newNode;
-        }
-        currentNode = nextNode;
-    }
 
+    if (currentNode == NULL){
+        printf("entrou\n");
+        currentNode=newNode;
+        newM->vectorColumns[pos.y]=currentNode;
+    }
+    else {
+        while (currentNode!=NULL){
+            nextNode = currentNode->next_in_Line;
+            if (pos.x > nextNode->pos.x){
+                newNode->next_in_Line=nextNode;
+                currentNode->next_in_Line=newNode;
+            }
+            currentNode = nextNode;
+        }
+    }
 return newM;
 
 }

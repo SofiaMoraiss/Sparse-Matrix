@@ -19,7 +19,10 @@ int main()
     Position p;
     p.x=2;
     p.y=4;
+    
     printf("1numLines: %d\nnumColumns: %d\n", m->numLines, m->numColumns);
+
+    matrix_print(m);
     m=matrix_add_node(m, p, 100);
 
     printf("2numLines: %d\nnumColumns: %d\n", m->numLines, m->numColumns);
