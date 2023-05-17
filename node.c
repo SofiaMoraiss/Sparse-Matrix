@@ -14,6 +14,10 @@ Node *node_construct(data_type value, Node *next_in_Line, Node *next_in_Column, 
 
 void node_print(Node *n){
     //printf("VALOR: %.2lf\n", n->value);
+    if (n==NULL){
+        printf("NULL\n");
+        return;
+    }
     printf("POS: [%d, %d] VALOR: %.2lf\n", n->pos.x, n->pos.y, n->value);
 }
 

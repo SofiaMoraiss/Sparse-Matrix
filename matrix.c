@@ -21,16 +21,18 @@ Matrix *matrix_construct(coord numLines, coord numColumns)
 
 Matrix *matrix_realloc_lines(Matrix *m, coord newSizeLines) 
 {
-    m->numLines = newSizeLines;
-    m->vectorLines = (Node **)realloc(m->vectorLines, newSizeLines * sizeof(Node *));
-    return m;
+    Matrix *newM = m;
+    newM->numLines = newSizeLines;
+    newM->vectorLines = (Node **)realloc(newM->vectorLines, newSizeLines * sizeof(Node *));
+    return newM;
 }
 
 Matrix *matrix_realloc_columns(Matrix *m, coord newSizeColumns) 
 {
-    m->numColumns = newSizeColumns;
-    m->vectorColumns = (Node **)realloc(m->vectorColumns, newSizeColumns * sizeof(Node *));
-    return m;
+    Matrix *newM = m;
+    newM->numColumns = newSizeColumns;
+    newM->vectorColumns = (Node **)realloc(newM->vectorColumns, newSizeColumns * sizeof(Node *));
+    return newM;
 }
 
 void matrix_print(Matrix *m)
@@ -38,38 +40,50 @@ void matrix_print(Matrix *m)
     qtt i=0, j, cont=0;
     Node * currentNode = m->vectorLines[i];
     Node * nextNode = NULL;
-    for (; i< m->numLines; i++)
+    //printf("numLines: %d\n",m->numLines);
+    for (i=0; i< m->numLines; i++)
     {
         currentNode = m->vectorLines[i];
         if (currentNode==NULL){
             for (j=0; j<m->numColumns; j++){
                 printf("0 ");
             }
-            print_newLine();
         }
         
-        while (currentNode != NULL)
-        {
-            if (cont<currentNode->pos.x){
-                for (j=cont; j<currentNode->pos.x; j++){
+        else {
+            //printf("não é nulo\n");
+            while (currentNode != NULL)
+            {
+                if (cont<currentNode->pos.x){
+                    for (j=cont; j<currentNode->pos.x; j++){
+                        printf("0 ");
+                        cont++;
+                    }
+                }
+                printf("%.2lf ", currentNode->value);
+                nextNode = currentNode->next_in_Line;
+                currentNode = nextNode;
+                cont++;
+            }
+            if (cont<m->numColumns){
+                for (j=cont; j<m->numColumns; j++){
                     printf("0 ");
                 }
             }
-            printf("%.2lf ", currentNode->value);
-            nextNode = currentNode->next_in_Line;
-            currentNode = nextNode;
-            cont++;
         }
         cont=0;
+        print_newLine();
         print_newLine();
     }
 }
 
 
-Matrix * matrix_add_node(Matrix *m, Position pos, data_type value)
+Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value)
 {
     Matrix *newM=m;
-
+    Position pos;
+    pos.x=x;
+    pos.y=y;
     if (pos.x >=m->numColumns){
         matrix_realloc_columns(newM, m->numColumns*2);
     }
@@ -78,11 +92,12 @@ Matrix * matrix_add_node(Matrix *m, Position pos, data_type value)
     }
 
     Node * currentNode = newM->vectorColumns[pos.x];
+    //printf("pos.x: %d\n", pos.x);
     Node * newNode = NULL;
     Node * nextNode = NULL;
 
     if (currentNode == NULL){
-        printf("entrou\n");
+        //printf("entrou\n");
         newNode=node_construct(value, NULL, nextNode, pos);
         node_print(newNode);
         currentNode=newNode;
@@ -107,12 +122,14 @@ Matrix * matrix_add_node(Matrix *m, Position pos, data_type value)
     
 
     currentNode = newM->vectorLines[pos.y];
+    //printf("pos.y: %d\n", pos.y);
+    //node_print(currentNode);
     nextNode = NULL;
 
     if (currentNode == NULL){
-        printf("entrou\n");
+        //printf("entrou\n");
         currentNode=newNode;
-        newM->vectorColumns[pos.y]=currentNode;
+        newM->vectorLines[pos.y]=currentNode;
     }
     else {
         while (currentNode!=NULL){
@@ -140,12 +157,12 @@ void matrix_destroy(Matrix *m)
     qtt i=0;
     for (; i< m->numColumns; i++)
     {
-        printf("+ 1 coluna\n");
+        //printf("+ 1 coluna\n");
         Node * currentNode = m->vectorColumns[i];
         Node * nextNode = NULL;
         while (currentNode != NULL)
         {
-            printf("oi\n");
+            //printf("oi\n");
             nextNode = currentNode->next_in_Column;
             node_destroy(currentNode);
             currentNode = nextNode;

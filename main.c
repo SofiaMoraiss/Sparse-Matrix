@@ -10,30 +10,25 @@ void print_int(int data)
 int main()
 {
     qtt numLines, numColumns;
+    data_type value;
     printf("Digite o numero de linhas e colunas: ");
     scanf("%d %d", &numLines, &numColumns);
 
-    //for ()
-
     Matrix * m = matrix_construct(numLines, numColumns); 
-    Position p;
-    p.x=2;
-    p.y=4;
-    
-    printf("1numLines: %d\nnumColumns: %d\n", m->numLines, m->numColumns);
 
     matrix_print(m);
-    m=matrix_add_node(m, p, 100);
 
-    printf("2numLines: %d\nnumColumns: %d\n", m->numLines, m->numColumns);
+    for (int i = 0; i < numLines; i++) {
+        for (int j = 0; j < numColumns; j++) {
+            scanf("%lf%*c", &value);
+            if (value != 0){
+                m=matrix_add_node(m, j, i, value);
+            }
+        }
+        //scanf("%*c");
+    }
+
     matrix_print(m);
-
-    // test the size and print functions
-    printf("3numLines: %d\nnumColumns: %d\n", m->numLines, m->numColumns);
-    //printf("Lista: ");
-    //forward_list_print(l, print_int);
-    //printf("\n");
-
     // test the destroy function
     matrix_destroy(m);
 
