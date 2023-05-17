@@ -92,9 +92,9 @@ Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value)
     }
 
     Node * currentNode = newM->vectorColumns[pos.x];
-    //printf("pos.x: %d\n", pos.x);
     Node * newNode = NULL;
     Node * nextNode = NULL;
+    Node * previousNode = NULL;
 
     if (currentNode == NULL){
         //printf("entrou\n");
@@ -107,39 +107,50 @@ Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value)
     else {
         while (currentNode!=NULL){
             nextNode = currentNode->next_in_Column;
+            node_print(nextNode);
+
             if (pos.y == currentNode->pos.y){
                 currentNode->value=value;
                 return newM;
             }
-            if (pos.y > nextNode->pos.y){
+            if (pos.y < currentNode->pos.y){
+                printf("entrou linha 116\n");
                 newNode=node_construct(value, NULL, nextNode, pos);
                 //node_print(newNode);
-                currentNode->next_in_Column=newNode;
+                //previousNode=newNode;
+
+                return newM;
             }
+
+            // !!!!se for zero remover no
+            previousNode = currentNode;
             currentNode = nextNode;
         }
+        newNode=node_construct(value, NULL, nextNode, pos);
+        previousNode->next_in_Column=newNode;
     }
     
 
     currentNode = newM->vectorLines[pos.y];
-    //printf("pos.y: %d\n", pos.y);
-    //node_print(currentNode);
     nextNode = NULL;
 
     if (currentNode == NULL){
-        //printf("entrou\n");
         currentNode=newNode;
         newM->vectorLines[pos.y]=currentNode;
     }
     else {
         while (currentNode!=NULL){
             nextNode = currentNode->next_in_Line;
-            if (pos.x > nextNode->pos.x){
+            if (pos.x < currentNode->pos.x){
                 newNode->next_in_Line=nextNode;
                 currentNode->next_in_Line=newNode;
+                previousNode->next_in_Column=newNode;
+                return newM;
             }
+            previousNode = currentNode;
             currentNode = nextNode;
         }
+        previousNode->next_in_Line=newNode;
     }
 return newM;
 

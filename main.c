@@ -5,6 +5,7 @@
 void print_int(int data)
 {
     printf("%d", data);
+
 }
 
 int main()
@@ -27,7 +28,9 @@ int main()
         }
         //scanf("%*c");
     }
-
+    print_newLine();
+    print_newLine();
+    
     matrix_print(m);
     // test the destroy function
     matrix_destroy(m);
