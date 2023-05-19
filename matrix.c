@@ -77,6 +77,30 @@ void matrix_print(Matrix *m)
     }
 }
 
+Matrix * matrix_read()
+{
+    qtt numLines, numColumns;
+    data_type value;
+
+    printf("Digite o numero de linhas e colunas: ");
+    scanf("%d %d", &numLines, &numColumns);
+
+    Matrix * m = matrix_construct(numLines, numColumns); 
+
+    matrix_print(m);
+
+    for (int i = 0; i < numLines; i++) {
+        for (int j = 0; j < numColumns; j++) {
+            scanf("%lf%*c", &value);
+            if (value != 0){
+                m=matrix_add_node(m, j, i, value);
+            }
+        }
+    }
+
+    return m;
+}
+
 
 Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value)
 {
@@ -97,9 +121,7 @@ Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value)
     Node * previousNode = NULL;
 
     if (currentNode == NULL){
-        //printf("entrou\n");
         newNode=node_construct(value, NULL, nextNode, pos);
-        node_print(newNode);
         currentNode=newNode;
         newM->vectorColumns[pos.x]=currentNode;
     }
@@ -107,7 +129,6 @@ Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value)
     else {
         while (currentNode!=NULL){
             nextNode = currentNode->next_in_Column;
-            node_print(nextNode);
 
             if (pos.y == currentNode->pos.y){
                 currentNode->value=value;

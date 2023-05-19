@@ -14,6 +14,7 @@ typedef struct matrix
 Matrix *matrix_construct(coord numLines, coord numColumns);
 Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value);
 void print_newLine();
+Matrix * matrix_read();
 void matrix_print(Matrix *m);
 void matrix_destroy(Matrix *m);
 
