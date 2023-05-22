@@ -127,6 +127,12 @@ Matrix *matrix_transpose(Matrix*m);
  * - Complexity O(N²)
  */
 Matrix *matrix_slice(Matrix*m, Position start, Position end);
+
+Matrix * matrix_convolution(Matrix *m, Matrix *mKernel);
+
+data_type matrix_calculate_cofactor(Matrix *m, Position p);
+
+data_type matrix_det_squared(Matrix *m);
 /**
  * @brief Destroys the whole matrix and its nodes
  * @return void

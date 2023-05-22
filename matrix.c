@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "matrix.h"
 #include "node.h"
 
@@ -176,12 +177,130 @@ Matrix * matrix_read()
     return m;
 }
 
+// Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value)
+// {
+//     Position pos;
+//     int flagCreated=0;
+//     pos.x=x;
+//     pos.y=y;
+//     if (pos.x >=m->numColumns){
+//         matrix_realloc_columns(m, m->numColumns*2);
+//     }
+//     if (pos.y >=m->numLines){
+//         matrix_realloc_lines(m, m->numLines*2);
+//     }
+//     Node * currentNode = m->vectorColumns[pos.x];
+//     Node * newNode = NULL;
+//     Node * nextNode = NULL;
+//     Node * previousNode = NULL;
+
+//     if (currentNode == NULL){
+//         newNode=node_construct(value, NULL, nextNode, pos);
+//         currentNode=newNode;
+//         m->vectorColumns[pos.x]=currentNode;
+//     }
+
+//     else {
+//         while (currentNode!=NULL){
+//             nextNode = currentNode->next_in_Column;
+
+//             if (pos.y == currentNode->pos.y){
+//                 if (value!=0){
+//                     currentNode->value=value;
+//                     return m;
+//                 }
+//                 else {
+//                     if (previousNode==NULL){
+//                         m->vectorColumns[pos.x]=nextNode;
+//                     }
+//                     else if (nextNode!=NULL){
+//                         previousNode->next_in_Column=nextNode;
+//                     }
+//                     node_destroy(currentNode);
+//                 }
+//                 flagCreated=1;
+//                 previousNode=currentNode;
+//                 break;
+//             }
+//             if (pos.y < currentNode->pos.y){
+//                 newNode=node_construct(value, NULL, nextNode, pos);
+//                 if (previousNode==NULL){
+//                     m->vectorColumns[pos.x]=newNode;
+//                 }
+//                 else {
+//                     previousNode->next_in_Column=currentNode;
+//                 }
+//                 previousNode=currentNode;
+//                 flagCreated=1;
+//                 break;
+//             }
+
+//             previousNode = currentNode;
+//             currentNode = nextNode;
+//         }
+//         if (!flagCreated){
+//             if (value!=0){
+//                 newNode=node_construct(value, NULL, nextNode, pos);
+//                 previousNode->next_in_Column=newNode;
+//             }
+//             else {
+//                 return m;
+//             } 
+//         }  
+//     }
+    
+
+//     currentNode = m->vectorLines[pos.y];
+//     previousNode = NULL;
+//     nextNode = NULL;
+
+//     if (currentNode == NULL){
+//         m->vectorLines[pos.y]=newNode;
+//     }
+//     else {
+//         while (currentNode!=NULL){
+//             nextNode = currentNode->next_in_Line;
+//             if (pos.x == currentNode->pos.x){
+//                 if (value==0){
+//                     if (previousNode==NULL){
+//                         m->vectorLines[pos.x]=nextNode;
+//                     }
+//                     else {
+//                         previousNode->next_in_Line=currentNode->next_in_Line;
+//                     }
+//                     node_destroy(currentNode);
+//                 }
+//                 previousNode=currentNode;
+//                 break;
+//             }
+//             if (pos.x < currentNode->pos.x){
+//                 if (previousNode==NULL){
+//                     m->vectorLines[pos.y]=newNode;
+//                 }
+//                 else {
+//                     previousNode->next_in_Line=newNode;
+//                 }
+//                 newNode->next_in_Line=currentNode;
+//                 return m;
+//             }
+//             previousNode = currentNode;
+//             currentNode = nextNode;
+//         }
+//         previousNode->next_in_Line=newNode;
+//     }
+// return m;
+
+// }
+
+
+
 Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value)
 {
     Matrix *newM=m;
     Position pos;
     pos.x=x;
     pos.y=y;
+    int flagCreated=0;
 
     if(m == NULL){
         printf("Matrix not valid!");
@@ -193,7 +312,7 @@ Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value)
     }
 
     if (value==0){
-        if(!position_valid(m, x, y)){
+        if(!matrix_get_node_value(m, x, y)){
             return m;
         }
     }
@@ -220,25 +339,44 @@ Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value)
             nextNode = currentNode->next_in_Column;
 
             if (pos.y == currentNode->pos.y){
-                currentNode->value=value;
-                return newM;
+                if (value!=0){
+                    currentNode->value=value;
+                    return newM;
+                }
+                else {
+                    if (previousNode==NULL){
+                        newM->vectorColumns[pos.x]=nextNode;
+                    }
+                    else {
+                        previousNode->next_in_Column=nextNode;
+                    }
+                    //node_destroy(currentNode);
+                }
+                flagCreated=1;
+                break;
             }
             if (pos.y < currentNode->pos.y){
                 newNode=node_construct(value, NULL, nextNode, pos);
+                if (previousNode==NULL){
+                    newM->vectorColumns[pos.x]=newNode;
+                }
+                else {
+                    previousNode->next_in_Column=newNode;
+                }
+                flagCreated=1;
                 break;
             }
-
             previousNode = currentNode;
             currentNode = nextNode;
         }
-        if (newNode==NULL){
+        if (!flagCreated){
             newNode=node_construct(value, NULL, nextNode, pos);
             previousNode->next_in_Column=newNode;
         }
     }
     
-
     currentNode = newM->vectorLines[pos.y];
+    previousNode= NULL;
     nextNode = NULL;
 
     if (currentNode == NULL){
@@ -248,10 +386,24 @@ Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value)
     else {
         while (currentNode!=NULL){
             nextNode = currentNode->next_in_Line;
+            if(pos.x==currentNode->pos.x){
+                if (previousNode==NULL){
+                    newM->vectorLines[pos.y]=nextNode;
+                }
+                else {
+                    previousNode->next_in_Line=nextNode;
+                }
+                node_destroy(currentNode);
+                return newM;
+            }
             if (pos.x < currentNode->pos.x){
-                newNode->next_in_Line=nextNode;
-                currentNode->next_in_Line=newNode;
-                previousNode->next_in_Column=newNode;
+                if (previousNode==NULL){
+                    newM->vectorLines[pos.y]=newNode;
+                }
+                else {
+                    previousNode->next_in_Line=newNode;
+                }
+                newNode->next_in_Line=currentNode;
                 return newM;
             }
             previousNode = currentNode;
@@ -270,7 +422,6 @@ data_type matrix_get_node_value(Matrix *m, coord x, coord y)
 {
 
     if (!position_valid(m, x, y)){
-        printf("ERROR: Invalid position!\n");
         return 0;
     }
     Node * currentNode = m->vectorColumns[x];
@@ -462,6 +613,86 @@ Matrix *matrix_slice(Matrix*m, Position start, Position end)
 
     return newM;
 }
+
+Matrix * matrix_convolution(Matrix *m, Matrix *mKernel)
+{
+    matrix_print(mKernel,1 );
+    matrix_print(m, 1);
+    Matrix * newM = matrix_construct(m->numLines, m->numColumns);
+    data_type soma=0;
+    for (int i=0; i< newM->numColumns; i++){
+        for (int j=0; j< newM->numLines; j++){
+            for (int a=0; a<3; a++){
+                for (int b=0; b<3; b++){
+                    soma+=matrix_get_node_value(mKernel, a, b)*matrix_get_node_value(m, i+a-1, j+b-1);
+                }
+            }
+            if (soma){
+                matrix_add_node(newM, i, j, soma);
+            }
+            soma=0;
+        }     
+    }
+
+    return newM;
+}
+
+data_type matrix_det_squared(Matrix *m)
+{
+    data_type det=0;
+    int dim=m->numColumns;
+    if (dim==2){
+        det=matrix_get_node_value(m, 0, 0)*matrix_get_node_value(m, 1, 1);
+        det-=matrix_get_node_value(m, 1, 0)*matrix_get_node_value(m, 0, 1);
+    }
+    else if (dim==3){
+        det+=matrix_get_node_value(m, 0, 0)*matrix_get_node_value(m, 1, 1)*matrix_get_node_value(m, 2, 2);
+        det+=matrix_get_node_value(m, 1, 0)*matrix_get_node_value(m, 2, 1)*matrix_get_node_value(m, 0, 2);
+        det+=matrix_get_node_value(m, 2, 0)*matrix_get_node_value(m, 0, 1)*matrix_get_node_value(m, 1, 2);
+        det-=matrix_get_node_value(m, 0, 0)*matrix_get_node_value(m, 2, 1)*matrix_get_node_value(m, 1, 2);
+        det-=matrix_get_node_value(m, 1, 0)*matrix_get_node_value(m, 0, 1)*matrix_get_node_value(m, 2, 2);
+        det-=matrix_get_node_value(m, 2, 0)*matrix_get_node_value(m, 1, 1)*matrix_get_node_value(m, 0, 2);
+        
+    }
+    else if (dim>3){
+        Position p;
+        for (int i=0; i<dim; i++){
+            p.x=i; p.y=0;
+            det+=matrix_get_node_value(m,i, 0)*matrix_calculate_cofactor(m, p);
+        }
+    }
+    return det;
+}
+
+data_type matrix_calculate_cofactor(Matrix *m, Position p)
+{
+    data_type cofactor=0;
+    int dim=m->numColumns;
+    Matrix *mAux=matrix_construct(dim-1, dim-1);
+
+    int line = 0, column = 0;
+    
+    for (int i = 0; i < dim; i++) {
+        if (i != p.y) {
+            for (int j = 0; j < dim; j++) {
+                if (j != p.x) {
+                    mAux= matrix_add_node(mAux, column, line, matrix_get_node_value(m,j, i));
+                    column++;
+                }
+            }
+            line++;
+            column = 0;
+        }
+    }
+
+    cofactor= pow(-1, p.x+p.y)*matrix_det_squared(mAux);
+
+    matrix_destroy(mAux);
+
+    return cofactor;
+}
+
+
 
 void matrix_destroy(Matrix *m)
 {

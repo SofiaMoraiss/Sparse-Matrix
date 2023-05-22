@@ -14,6 +14,9 @@
 #define SLICE 11
 #define READ_BIN 12
 #define WRITE_BIN 13
+#define CONV 14
+#define COF 15
+#define DET 16
 
 void print_int(int data)
 {
@@ -50,6 +53,7 @@ int main()
     Matrix * m1=NULL;
     Matrix * m2=NULL;
     Matrix * mAux=NULL;
+    Matrix * mKernel=NULL;
     Position p1, p2;
 
     printf("\n\nWELCOME TO SOFIA'S SPARSE MATRIX OPERATOR!\n");
@@ -57,19 +61,25 @@ int main()
     {
         printf("\nChoose an operation:\n\n1- CREATE MATRIX 1\n2- CREATE MATRIX 2\n3- ADD OR ATRIBUTE VALUE TO NODE\n");
         printf("4- READ NODE\n5- SUM MATRIXES\n6- PRINT BOTH MATRIXES\n7- SWAP COLUMNS OR LINES\n8- MULTIPLY BY A SCALAR\n");
-        printf("9- MULTIPLY POINT-WISE\n10- TRANSPOSE\n11- SLICE\n12- READ BINARIES\n13- WRITE BINARIES\n");
-        printf("0- EXIT\n\n");
+        printf("9- MULTIPLY POINT-WISE\n10- TRANSPOSE\n11- SLICE\n12- READ BINARIES\n13- WRITE BINARIES\n14- CONVOLUTE\n");
+        printf("15- CALCULATE COFACTOR OF CHOSEN POSITION\n16- CALCULATE DETERMINANT\n0- EXIT\n\n");
         scanf("%d%*c", &action);
 
         switch (action)
         {
         case CREATE_M1:
+            if (m1!=NULL){
+                matrix_destroy(m1);
+            }
             m1=matrix_read();
 
             printf("\nThis is matrix 1 now:\n");
             matrix_print(m1, 1);
             break;
         case CREATE_M2:
+            if (m2!=NULL){
+                matrix_destroy(m2);
+            }
             m2=matrix_read();
 
             printf("\nThis is matrix 2 now:\n");
@@ -125,24 +135,23 @@ int main()
             nMatrix=ask_matrix();
             printf("Type 'l' or 'c' to choose line or column and then the two 'indexes' densely\n");
             scanf("%c %d %d%*c", &ch, &x, &y);
-            printf("x: %d y: %d\n", x, y);
             if (nMatrix==1){
                 if (ch=='l'){
-                    m1=matrix_swap_lines(m1, x, y);
+                    mAux=matrix_swap_lines(m1, x, y);
                 }
                 else {
-                    m1=matrix_swap_columns(m1, x, y);
-                    matrix_print(m1, 1);
+                    mAux=matrix_swap_columns(m1, x, y);
                 }
             }
             else if (nMatrix==2){
                 if (ch=='l'){
-                    m2=matrix_swap_lines(m2, x, y);
+                    mAux=matrix_swap_lines(m2, x, y);
                 }
                 else {
-                    m2=matrix_swap_columns(m2, x, y);
+                    mAux=matrix_swap_columns(m2, x, y);
                 }
             }
+            matrix_print(mAux, 1);
             break;
         case MULT_SCALAR:
             printf("Type the matrix number and the scalar ");
@@ -159,8 +168,8 @@ int main()
             break;
         case MULT_POINT:
             mAux=matrix_sum_or_mult(m1, m2, mult);
+            matrix_print(mAux, 1);
             matrix_destroy(mAux);
-            matrix_print(m1, 1);
             break;
         case TRANS:
             nMatrix=ask_matrix();
@@ -204,6 +213,40 @@ int main()
             if (m2!=NULL){
                 matrix_print_in_binary_file(m2, "m2.bin");
             }
+            break;
+        case CONV:
+            nMatrix=ask_matrix();
+            mKernel=matrix_read();
+            if (nMatrix==1){
+                mAux=matrix_convolution(m1, mKernel);
+            }
+            else if (nMatrix==2){
+                mAux=matrix_convolution(m2, mKernel);
+            }
+            printf("Convoluted matrix:\n\n");
+            matrix_print(mAux, 1);
+            matrix_destroy(mAux);
+            matrix_destroy(mKernel);
+            break;
+        case DET:
+            nMatrix=ask_matrix();
+            if (nMatrix==1){
+                val=matrix_det_squared(m1);
+            }
+            else if (nMatrix==2){
+                val=matrix_det_squared(m2);
+            }
+            printf("\nDET: %.2lf\n", val);
+            break;
+        case COF:
+            nMatrix=ask_matrix();
+            if (nMatrix==1){
+                val=matrix_calculate_cofactor(m1, ask_position() );
+            }
+            else if (nMatrix==2){
+                val=matrix_calculate_cofactor(m2, ask_position() );
+            }
+            printf("\nCOFACTOR: %.2lf\n", val);
             break;
         default:
             action = 0;
