@@ -8,6 +8,66 @@ void print_int(int data)
     printf("%d", data);
 }
 
+Matrix *matrix_sum_or_mult(Matrix *m1, Matrix *m2, data_type (*operation)(data_type, data_type), int flagIsSum)
+{
+    if (m1 == NULL || m2 == NULL){
+        printf("One or both matrixes are null!\n");
+        return m1;
+    }
+
+    if(m1->numColumns!=m2->numColumns || m1->numLines!=m2->numLines){
+        printf("Matrixes are not the same dimensions!\n");
+        return m1;
+    }
+    data_type value=0;
+    Matrix *mSum = m1;
+    Node * currentNode1 = NULL;
+    Node * currentNode2 = NULL;
+    for (int j=0; j< mSum->numLines; j++)
+    {
+        currentNode1 = mSum->vectorLines[j];
+        currentNode2 = m2->vectorLines[j];
+        while (1){
+            if (flagIsSum && currentNode2==NULL){
+                break;
+            }
+            if (!flagIsSum && currentNode1==NULL){
+                break;
+            }
+            value=0;
+            if (currentNode1==NULL){
+                mSum=matrix_add_node(mSum, currentNode2->pos.x, j, currentNode2->value);
+                currentNode2=currentNode2->next_in_Line;
+                continue;
+            }
+            if (currentNode2==NULL){
+                mSum=matrix_add_node(mSum, currentNode1->pos.x, j, 0);
+                currentNode1=currentNode1->next_in_Line;
+                continue;
+            }
+            coord x1 = currentNode1->pos.x, x2 =currentNode2->pos.x;
+            if (x1 < x2){
+                currentNode1=currentNode1->next_in_Line;
+            }
+            else if (x1 == x2){
+                currentNode1->value=operation(currentNode1->value, currentNode2->value);
+                currentNode1=currentNode1->next_in_Line;
+                currentNode2=currentNode2->next_in_Line;
+            }
+            else if (x2 < x1){
+                if (flagIsSum){
+                    value=currentNode2->value;
+                }
+                mSum=matrix_add_node(mSum, x2, j, value);
+                currentNode2=currentNode2->next_in_Line;
+            }
+        }     
+    }
+
+    return mSum;
+
+}
+
 int main()
 {
     int n, val;

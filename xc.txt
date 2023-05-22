@@ -1,0 +1,223 @@
+
+Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value)
+{
+    Position pos;
+    pos.x=x;
+    pos.y=y;
+    if (pos.x >=m->numColumns){
+        matrix_realloc_columns(m, m->numColumns*2);
+    }
+    if (pos.y >=m->numLines){
+        matrix_realloc_lines(m, m->numLines*2);
+    }
+    Node * currentNode = m->vectorColumns[pos.x];
+    Node * newNode = NULL;
+    Node * nextNode = NULL;
+    Node * previousNode = NULL;
+
+    if (currentNode == NULL){
+        newNode=node_construct(value, NULL, nextNode, pos);
+        currentNode=newNode;
+        m->vectorColumns[pos.x]=currentNode;
+    }
+
+    else {
+        while (currentNode!=NULL){
+            nextNode = currentNode->next_in_Column;
+
+            if (pos.y == currentNode->pos.y){
+                if (value!=0){
+                    currentNode->value=value;
+                }
+                else {
+                    if (previousNode==NULL){
+                        m->vectorColumns[pos.x]=nextNode;
+                    }
+                    else {
+                        previousNode->next_in_Column=currentNode->next_in_Column;
+                    }
+                    node_destroy(currentNode);
+                }
+                previousNode=currentNode;
+                break;
+            }
+            if (pos.y < currentNode->pos.y){
+                newNode=node_construct(value, NULL, nextNode, pos);
+                if (previousNode==NULL){
+                    m->vectorColumns[pos.x]=newNode;
+                }
+                else {
+                    previousNode->next_in_Column=currentNode;
+                }
+                previousNode=currentNode;
+                break;
+            }
+
+            previousNode = currentNode;
+            currentNode = nextNode;
+        }
+        if (newNode==NULL){
+            if (value!=0){
+                newNode=node_construct(value, NULL, nextNode, pos);
+                previousNode->next_in_Column=newNode;
+            }
+            else {
+                return m;
+            } 
+        }  
+    }
+    
+
+    currentNode = m->vectorLines[pos.y];
+    previousNode = NULL;
+    nextNode = NULL;
+
+    if (currentNode == NULL){
+        m->vectorLines[pos.y]=newNode;
+    }
+    else {
+        while (currentNode!=NULL){
+            nextNode = currentNode->next_in_Line;
+            if (pos.x == currentNode->pos.x){
+                if (value==0){
+                    if (previousNode==NULL){
+                        m->vectorColumns[pos.x]=nextNode;
+                    }
+                    else {
+                        previousNode->next_in_Column=currentNode->next_in_Column;
+                    }
+                    node_destroy(currentNode);
+                }
+                previousNode=currentNode;
+                break;
+            }
+            if (pos.x < currentNode->pos.x){
+                if (previousNode==NULL){
+                    m->vectorLines[pos.y]=newNode;
+                }
+                else {
+                    previousNode->next_in_Line=newNode;
+                }
+                newNode->next_in_Line=currentNode;
+                return m;
+            }
+            previousNode = currentNode;
+            currentNode = nextNode;
+        }
+        previousNode->next_in_Line=newNode;
+    }
+return m;
+
+}
+
+
+Matrix * matrix_add_node(Matrix *m, coord x, coord y, data_type value)
+{
+    Position pos;
+    pos.x=x;
+    pos.y=y;
+    if (pos.x >=m->numColumns){
+        matrix_realloc_columns(m, m->numColumns*2);
+    }
+    if (pos.y >=m->numLines){
+        matrix_realloc_lines(m, m->numLines*2);
+    }
+    Node * currentNode = m->vectorColumns[pos.x];
+    Node * newNode = NULL;
+    Node * nextNode = NULL;
+    Node * previousNode = NULL;
+
+    if (currentNode == NULL){
+        newNode=node_construct(value, NULL, nextNode, pos);
+        currentNode=newNode;
+        m->vectorColumns[pos.x]=currentNode;
+    }
+
+    else {
+        while (currentNode!=NULL){
+            nextNode = currentNode->next_in_Column;
+
+            if (pos.y == currentNode->pos.y){
+                if (value!=0){
+                    currentNode->value=value;
+                }
+                else {
+                    if (previousNode==NULL){
+                        m->vectorColumns[pos.x]=nextNode;
+                    }
+                    else {
+                        previousNode->next_in_Column=currentNode->next_in_Column;
+                    }
+                    node_destroy(currentNode);
+                }
+                previousNode=currentNode;
+                break;
+            }
+            if (pos.y < currentNode->pos.y){
+                newNode=node_construct(value, NULL, nextNode, pos);
+                if (previousNode==NULL){
+                    m->vectorColumns[pos.x]=newNode;
+                }
+                else {
+                    previousNode->next_in_Column=currentNode;
+                }
+                previousNode=currentNode;
+                break;
+            }
+
+            previousNode = currentNode;
+            currentNode = nextNode;
+        }
+        if (newNode==NULL){
+            if (value!=0){
+                newNode=node_construct(value, NULL, nextNode, pos);
+                previousNode->next_in_Column=newNode;
+            }
+            else {
+                return m;
+            } 
+        }  
+    }
+    
+
+    currentNode = m->vectorLines[pos.y];
+    previousNode = NULL;
+    nextNode = NULL;
+
+    if (currentNode == NULL){
+        m->vectorLines[pos.y]=newNode;
+    }
+    else {
+        while (currentNode!=NULL){
+            nextNode = currentNode->next_in_Line;
+            if (pos.x == currentNode->pos.x){
+                if (value==0){
+                    if (previousNode==NULL){
+                        m->vectorColumns[pos.x]=nextNode;
+                    }
+                    else {
+                        previousNode->next_in_Column=currentNode->next_in_Column;
+                    }
+                    node_destroy(currentNode);
+                }
+                previousNode=currentNode;
+                break;
+            }
+            if (pos.x < currentNode->pos.x){
+                if (previousNode==NULL){
+                    m->vectorLines[pos.y]=newNode;
+                }
+                else {
+                    previousNode->next_in_Line=newNode;
+                }
+                newNode->next_in_Line=currentNode;
+                return m;
+            }
+            previousNode = currentNode;
+            currentNode = nextNode;
+        }
+        previousNode->next_in_Line=newNode;
+    }
+return m;
+
+}
